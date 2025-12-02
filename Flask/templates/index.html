@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ScaNN - Tìm kiếm văn bản tương tự</title>
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root{
+            --bg1:#f6f8ff;
+            --accent-1:#6366f1;
+            --accent-2:#7c3aed;
+            --card:#ffffff;
+            --muted:#6b7280;
+            --glass: rgba(255,255,255,0.65);
+            --radius:14px;
+            --shadow: 0 8px 30px rgba(15,23,42,0.08);
+            --success:#10b981;
+        }
+
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{
+            margin:0;
+            font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 60%);
+            color:#111827;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+            padding:28px;
+        }
+
+        .wrap{
+            max-width:1100px;
+            margin:0 auto;
+            display:grid;
+            grid-template-columns: 1fr 420px;
+            gap:30px;
+            align-items:start;
+        }
+
+        /* left panel (search + results) */
+        .panel {
+            background: linear-gradient(180deg, var(--card), #fbfdff);
+            border-radius: var(--radius);
+            padding:22px;
+            box-shadow: var(--shadow);
+            overflow:hidden;
+        }
+
+        header.app-header{
+            display:flex;
+            align-items:center;
+            gap:14px;
+            margin-bottom:18px;
+        }
+
+        .logo{
+            width:56px;
+            height:56px;
+            border-radius:12px;
+            background: linear-gradient(135deg,var(--accent-1),var(--accent-2));
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:white;
+            font-weight:700;
+            font-size:20px;
+            box-shadow:0 6px 18px rgba(99,102,241,0.18);
+        }
+
+        h1.title{
+            font-size:20px;
+            margin:0;
+            color:#0f172a;
+        }
+        p.lead{margin:4px 0 0;color:var(--muted);font-size:13px}
+
+        .controls{
+            display:flex;
+            gap:12px;
+            align-items:center;
+            margin-top:16px;
+            margin-bottom:18px;
+        }
+
+        .method-group{
+            display:flex;
+            gap:8px;
+            background: rgba(99,102,241,0.06);
+            padding:6px;
+            border-radius:999px;
+            align-items:center;
+        }
+        .method-group input[type="radio"]{display:none}
+        .method-btn{
+            padding:8px 12px;
+            border-radius:999px;
+            font-size:13px;
+            cursor:pointer;
+            color:var(--muted);
+            transition: all .18s ease;
+            user-select:none;
+        }
+        .method-btn.active{
+            background:linear-gradient(90deg,var(--accent-1),var(--accent-2));
+            color:#fff;
+            box-shadow:0 6px 18px rgba(124,58,237,0.12);
+            font-weight:600;
+        }
+
+        .search-row{
+            display:flex;
+            gap:10px;
+            margin-bottom:12px;
+        }
+        .input{
+            flex:1;
+            display:flex;
+            gap:10px;
+            align-items:center;
+            background:var(--glass);
+            border-radius:10px;
+            padding:10px;
+            border:1px solid rgba(15,23,42,0.04);
+            transition: box-shadow .12s, transform .08s;
+        }
+        .input:focus-within{ box-shadow: 0 6px 20px rgba(99,102,241,0.08); transform: translateY(-1px); }
+
+        .input input[type="text"]{
+            border:0;
+            outline:0;
+            font-size:15px;
+            background:transparent;
+            color: #0f172a;
+            width:100%;
+        }
+
+        .input input[type="number"]{
+            width:84px;
+            border:0;
+            outline:0;
+            padding:6px 8px;
+            font-size:14px;
+            border-radius:8px;
+            background:rgba(15,23,42,0.03);
+        }
+
+        button.search-btn{
+            background:linear-gradient(90deg,var(--accent-1),var(--accent-2));
+            color:white;
+            border:0;
+            padding:10px 14px;
+            border-radius:10px;
+            font-weight:600;
+            cursor:pointer;
+            box-shadow:0 8px 26px rgba(99,102,241,0.12);
+            transition: transform .08s ease;
+        }
+        button.search-btn:active{ transform:translateY(1px) }
+
+        .meta{
+            display:flex;
+            gap:12px;
+            align-items:center;
+            color:var(--muted);
+            font-size:13px;
+            margin-bottom:14px;
+        }
+
+        .results{
+            display:grid;
+            gap:12px;
+            margin-top:6px;
+        }
+
+        .card{
+            background: linear-gradient(180deg,#fff,#fbfdff);
+            border-radius:12px;
+            padding:14px;
+            border:1px solid rgba(15,23,42,0.04);
+            display:flex;
+            gap:12px;
+            align-items:flex-start;
+            transition: transform .12s, box-shadow .12s;
+        }
+        .card:hover{ transform: translateY(-6px); box-shadow: 0 14px 40px rgba(2,6,23,0.06); }
+
+        .rank{
+            min-width:44px;
+            height:44px;
+            border-radius:10px;
+            background: linear-gradient(180deg,rgba(99,102,241,0.12),rgba(124,58,237,0.06));
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:700;
+            color:var(--accent-2);
+            font-size:14px;
+        }
+
+        .card-body{flex:1}
+        .card-text{color:#0b1220; font-size:15px; line-height:1.5; margin-bottom:8px}
+        .card-meta{ display:flex; justify-content:space-between; align-items:center; gap:8px; color:var(--muted); font-size:13px }
+        .score{background:rgba(124,58,237,0.12); color:var(--accent-2); padding:6px 10px; border-radius:999px; font-weight:600}
+
+        /* right panel (info/help) */
+        .side{
+            display:flex;
+            flex-direction:column;
+            gap:14px;
+        }
+        .panel.side-panel{ padding:18px; border-radius:12px; box-shadow: var(--shadow) }
+
+        .small{font-size:13px;color:var(--muted)}
+        .kbd{ display:inline-block; padding:6px 8px; border-radius:8px; background:#0b122026; color:#0b1226; font-weight:600; font-size:13px }
+
+        .note{ font-size:13px; color:var(--muted); line-height:1.5 }
+
+        .empty{
+            text-align:center;
+            padding:28px;
+            color:var(--muted);
+            border:1px dashed rgba(15,23,42,0.04);
+            border-radius:10px;
+            background:linear-gradient(180deg, rgba(99,102,241,0.03), transparent);
+        }
+
+        /* responsiveness */
+        @media (max-width: 980px){
+            .wrap{ grid-template-columns: 1fr; padding:12px }
+            .side{ order:2 }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="panel">
+            <header class="app-header">
+                <div class="logo">SNN</div>
+                <div>
+                    <h1 class="title">ScaNN — Text similarity search</h1>
+                    <p class="lead">Nhập text, chọn phương pháp — trả về danh sách ứng viên tương tự.</p>
+                </div>
+            </header>
+
+            <div class="controls">
+                <div class="method-group" role="tablist" aria-label="Phương pháp tìm kiếm">
+                    <div id="btn-scann" class="method-btn active" data-method="scann">ScaNN <span style="margin-left:8px;font-size:12px;background:#eef2ff;color:#374151;padding:4px 8px;border-radius:999px">Nhanh</span></div>
+                    <div id="btn-brute" class="method-btn" data-method="brute-force">Brute Force <span style="margin-left:8px;font-size:12px;background:#fffbeb;color:#92400e;padding:4px 8px;border-radius:999px">Chính xác</span></div>
+                </div>
+            </div>
+
+            <div class="search-row">
+                <div class="input" role="search" aria-label="Search">
+                    <input id="queryInput" type="text" placeholder="Nhập text để tìm kiếm..." />
+                    <input id="kInput" type="number" value="5" min="1" max="100" />
+                </div>
+                <button id="searchBtn" class="search-btn">Tìm kiếm</button>
+            </div>
+
+            <div class="meta">
+                <div class="small">Phương pháp: <strong id="methodLabel">ScaNN</strong></div>
+                <div class="small">Kết quả tối đa: <strong id="kLabel">5</strong></div>
+                <div class="small" id="timingInfo" style="margin-left:auto;color:#10b981;font-weight:600"></div>
+            </div>
+
+            <div id="pagination" style="display:none;margin-bottom:12px;gap:8px;align-items:center;justify-content:center">
+                <button id="prevBtn" class="search-btn" style="padding:8px 12px;font-size:13px">← Trước</button>
+                <div class="small" id="pageInfo" style="padding:8px 16px;background:rgba(99,102,241,0.1);border-radius:8px;font-weight:600"></div>
+                <input id="pageInput" type="number" min="1" value="1" style="width:70px;padding:8px;border:1px solid rgba(99,102,241,0.3);border-radius:8px;text-align:center;font-weight:600" />
+                <button id="goPageBtn" class="search-btn" style="padding:8px 12px;font-size:13px">Đi</button>
+                <button id="nextBtn" class="search-btn" style="padding:8px 12px;font-size:13px">Tiếp →</button>
+            </div>
+
+            <div id="results" class="results" aria-live="polite">
+                <div class="empty" id="emptyState">Chưa có kết quả. Nhập text và bấm "Tìm kiếm".</div>
+            </div>
+        </div>
+
+        <aside class="side">
+            <div class="panel side-panel">
+                <h3 style="margin:0 0 8px 0">Hướng dẫn nhanh</h3>
+                <p class="note">Chọn <strong>ScaNN</strong> để sử dụng thuật toán scaNN. </p>
+                <p class="note">Chọn <strong>Brute Force</strong> để so sánh trên toàn bộ vector.</p>
+                <hr style="border:none;border-top:1px solid #f1f5f9;margin:12px 0" />
+                <p class="small"><strong>Lưu ý:</strong></p>
+                <ul style="margin:8px 0 0 18px;color:var(--muted);font-size:13px">
+                    <li>ScaNN nhanh cho dataset lớn.</li>
+                    <li>Brute Force chính xác, chậm hơn.</li>
+                </ul>
+            </div>
+
+            <div class="panel side-panel">
+                <h4 style="margin:0 0 8px 0">Phím tắt</h4>
+                <p class="small">Nhấn <span class="kbd">Enter</span> trong ô input để tìm nhanh.</p>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // minimal JS to wire UI to existing endpoints
+        let selectedMethod = 'scann';
+        let currentPage = 1;
+        let currentQuery = '';
+        let currentK = 5;
+        let totalPages = 1;
+        let initialSearchTime = 0;  // Store first search time
+        
+        const btnScann = document.getElementById('btn-scann');
+        const btnBrute = document.getElementById('btn-brute');
+        const methodLabel = document.getElementById('methodLabel');
+        const kLabel = document.getElementById('kLabel');
+        const resultsEl = document.getElementById('results');
+        const emptyState = document.getElementById('emptyState');
+        const paginationEl = document.getElementById('pagination');
+        const pageInfo = document.getElementById('pageInfo');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pageInput = document.getElementById('pageInput');
+        const goPageBtn = document.getElementById('goPageBtn');
+
+        function setMethod(m){
+            selectedMethod = m;
+            methodLabel.textContent = m === 'scann' ? 'ScaNN' : 'Brute Force';
+            btnScann.classList.toggle('active', m === 'scann');
+            btnBrute.classList.toggle('active', m === 'brute-force');
+        }
+
+        btnScann.addEventListener('click', ()=> setMethod('scann'));
+        btnBrute.addEventListener('click', ()=> setMethod('brute-force'));
+        
+        prevBtn.addEventListener('click', ()=> {
+            if(currentPage > 1) {
+                currentPage--;
+                doSearch(currentPage);
+            }
+        });
+        
+        nextBtn.addEventListener('click', ()=> {
+            if(currentPage < totalPages) {
+                currentPage++;
+                doSearch(currentPage);
+            }
+        });
+        
+        goPageBtn.addEventListener('click', ()=> {
+            const targetPage = parseInt(pageInput.value);
+            if(targetPage >= 1 && targetPage <= totalPages) {
+                currentPage = targetPage;
+                doSearch(currentPage);
+            } else {
+                alert(`Vui lòng nhập số trang từ 1 đến ${totalPages}`);
+            }
+        });
+        
+        pageInput.addEventListener('keypress', (e)=> {
+            if(e.key === 'Enter') {
+                goPageBtn.click();
+            }
+        });
+
+        document.getElementById('kInput').addEventListener('change', (e)=>{
+            kLabel.textContent = e.target.value;
+        });
+
+        document.getElementById('searchBtn').addEventListener('click', ()=> doSearch(1));
+        document.getElementById('queryInput').addEventListener('keypress', (e)=>{ if(e.key==='Enter') doSearch(1); });
+
+        function doSearch(page = 1){
+            const q = document.getElementById('queryInput').value.trim();
+            const k = parseInt(document.getElementById('kInput').value) || 5;
+            if(!q) return alert('Vui lòng nhập text để tìm kiếm.');
+
+            currentQuery = q;
+            currentK = k;
+            currentPage = page;
+            
+            // Reset initial search time on new query (page 1)
+            if(page === 1) {
+                initialSearchTime = 0;
+            }
+
+            // UI feedback
+            resultsEl.innerHTML = '<div class="empty">Đang tìm kiếm...</div>';
+
+            const endpoint = (selectedMethod === 'scann') ? '/search/scann' : '/search/brute-force';
+            fetch(endpoint, {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ query: q, k, page, page_size: 1000 })
+            }).then(async res=>{
+                if(!res.ok) throw new Error('HTTP ' + res.status);
+                return res.json();
+            }).then(data=>{
+                // Store initial search time (page 1 only)
+                if(page === 1 && data.time_ms) {
+                    initialSearchTime = data.time_ms;
+                }
+                totalPages = data.total_pages || 1;
+                renderResults(data);
+                updatePagination(data);
+            }).catch(err=>{
+                resultsEl.innerHTML = `<div class="empty">Lỗi: ${err.message}</div>`;
+                console.error(err);
+            });
+        }
+        
+        function updatePagination(data) {
+            if(data.total_pages > 1) {
+                paginationEl.style.display = 'flex';
+                pageInfo.textContent = `Trang ${data.page}/${data.total_pages} (${data.start_idx}-${data.end_idx}/${data.total_results})`;
+                pageInput.value = data.page;
+                pageInput.max = data.total_pages;
+                prevBtn.disabled = data.page <= 1;
+                nextBtn.disabled = data.page >= data.total_pages;
+                prevBtn.style.opacity = prevBtn.disabled ? '0.5' : '1';
+                nextBtn.style.opacity = nextBtn.disabled ? '0.5' : '1';
+            } else {
+                paginationEl.style.display = 'none';
+            }
+        }
+
+        function renderResults(data){
+            if(!data || !data.texts || data.texts.length===0){
+                resultsEl.innerHTML = '<div class="empty">Không tìm thấy kết quả.</div>';
+                return;
+            }
+            
+            // Display timing info - use initial search time for all pages
+            const timingEl = document.getElementById('timingInfo');
+            const displayTime = initialSearchTime || data.time_ms;
+            if(displayTime) {
+                timingEl.textContent = `⚡ ${displayTime}ms (${data.total_results} kết quả)`;
+            }
+            
+            const texts = data.texts;
+            const scores = data.method === 'scaNN' ? data.distances : data.similarities;
+            const scoreLabel = data.method === 'scaNN' ? 'Distance' : 'Similarity';
+            const startRank = data.start_idx || 1;
+            
+            const html = texts.map((text, i)=>{
+                const score = Number(scores[i]).toFixed(4);
+                return `<div class="card">
+                    <div class="rank">#${startRank + i}</div>
+                    <div class="card-body">
+                        <div class="card-text">${escapeHtml(text)}</div>
+                        <div class="card-meta"><div class="small">${scoreLabel}</div><div class="score">${score}</div></div>
+                    </div>
+                </div>`;
+            }).join('');
+            resultsEl.innerHTML = html;
+        }
+
+        function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' })[c]); }
+    </script>
+</body>
+</html>
