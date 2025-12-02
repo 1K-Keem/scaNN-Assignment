@@ -2,7 +2,6 @@
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1uhgY7Q1F76mHqaqXzGNEgGmfCGvGb8Yf#scrollTo=8FkHCYtE0yHA)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![C++](https://img.shields.io/badge/C++-17-blue.svg)](https://isocpp.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 > So sánh hiệu năng tìm kiếm tương đồng giữa **ScaNN** và **Brute-force** trên tập dữ liệu embedding văn bản quy mô lớn.
@@ -52,7 +51,6 @@ scaNN_Assignment/
 ├── 📓 scaNN.ipynb              # Notebook chính - chạy ScaNN và so sánh
 ├── 📄 text.csv                 # Dataset lớn (~500,000 câu văn)
 ├── 📦 miniLM_embeddings.npz    # File embeddings đã tính sẵn
-├── 📓 cpp_implement            # Cài đặt đơn giản thủ công bằng C++
 └── 📖 README.md                # Tài liệu hướng dẫn
 ```
 
