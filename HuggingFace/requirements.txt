@@ -1,0 +1,5 @@
+gradio==4.44.0
+numpy==2.0.2
+sentence-transformers==5.1.2
+protobuf>=5.26.0
+scann
