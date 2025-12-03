@@ -23,7 +23,7 @@
 - [Kiến trúc hệ thống](#-kiến-trúc-hệ-thống)
 - [Kết quả](#-kết-quả)
 - [Tài liệu tham khảo](#-tài-liệu-tham-khảo)
-- [Tác giả](#-tác-giả)
+- [Tác giả](#%E2%80%8D-tác-giả)
 
 ---
 
