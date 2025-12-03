@@ -7,7 +7,7 @@
 [![Python](https://img.shields.io/badge/Python-41.2%25-blue)](https://github.com/1K-Keem/scaNN-Assignment)
 
 > **Công cụ tìm kiếm văn bản semantic search sử dụng ScaNN (Scalable Nearest Neighbors) của Google**  
-> Đồ án mở rộng môn Cấu trúc Dữ liệu và Giải thuật (DSA) - HK251 - ĐHBK TP.HCM
+> Bài tập mở rộng môn Cấu trúc Dữ liệu và Giải thuật (DSA) - HK251 - ĐHBK TP.HCM
 
 ---
 
