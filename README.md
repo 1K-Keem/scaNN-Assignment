@@ -2,7 +2,6 @@
 
 [![Demo](https://img.shields.io/badge/🚀_Live_Demo-Hugging_Face-yellow)](https://1kzzm-scann.hf.space/)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![HTML](https://img.shields.io/badge/HTML-58.8%25-orange)](https://github.com/1K-Keem/scaNN-Assignment)
 [![Python](https://img.shields.io/badge/Python-41.2%25-blue)](https://github.com/1K-Keem/scaNN-Assignment)
 
@@ -351,12 +350,6 @@ Mọi đóng góp đều được hoan nghêng!  Nếu bạn muốn cải thiệ
 3.  Commit thay đổi (`git commit -m 'Add some AmazingFeature'`)
 4. Push lên branch (`git push origin feature/AmazingFeature`)
 5.  Tạo Pull Request
-
----
-
-## 📜 License
-
-Dự án này được phân phối dưới giấy phép MIT.  Xem file `LICENSE` để biết thêm chi tiết.
 
 ---
 
