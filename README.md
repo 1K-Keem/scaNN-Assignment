@@ -329,8 +329,8 @@ anisotropic_quantization_threshold = 0.2   # Ngưỡng quantization
 
 ## 👨‍💻 Authors
 
-**Trần Văn Thiên kim** ([@1K-Keem](https://github.com/1K-Keem))
-**Phan Phước Thiện Quang** ([@ducklemon596](https://github.com/ducklemon596))
+**Trần Văn Thiên kim** ([@1K-Keem](https://github.com/1K-Keem)), 
+**Phan Phước Thiện Quang** ([@ducklemon596](https://github.com/ducklemon596)), 
 **Lê Đức Nguyên Khoa** ([@monoz2406](https://github.com/monoz2406))
 
 
@@ -338,7 +338,7 @@ anisotropic_quantization_threshold = 0.2   # Ngưỡng quantization
 ### Extra Assignment For Honors Program
 - 📚 **Môn học**: Cấu trúc Dữ liệu và Giải thuật (DSA)
 - 🏫 **Trường**: Đại học Bách Khoa TP.HCM (HCMUT)
-- 📅 **Học kỳ**: 251 (2024-2025)
+- 📅 **Học kỳ**: 251 (2025-2026)
 
 ---
 
